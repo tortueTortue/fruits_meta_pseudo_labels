@@ -28,6 +28,7 @@ class Fruits360Dataset:
         # Split training set into train n val
         list_ds = tf.data.Dataset.list_files(str(fruits_root/'*/*'))
         self.train_set = list_ds.map(self.process_path)
+        # print(f"Train shape: {self.train_set.batch(4).shape}")
 
         # Import test set
         fruits_test_root = pathlib.Path(TEST_SET_PATH)
@@ -38,7 +39,7 @@ class Fruits360Dataset:
         return tf.io.read_file(file_path), label
 
     def next_batch(self, batch_size):
-        idx = np.random.choice(500, batch_size)
+        idx = np.random.choice(self.training_size(), batch_size)
         yield self.input[idx], self.y[idx]
 
     def training_size(self):
@@ -57,10 +58,10 @@ class Fruits360Dataset:
         return self.classes
 
     def show_random_image_from_test_set(self):
-        Image.open().show(title='Pomme')
+        Image.open(RANDOM_IMAGE_PATH).show(title='Pomme')
 
 
 # TEST
 # from utils.config import process_config
-Fruits360Dataset(None).show_random_image_from_test_set(RANDOM_IMAGE_PATH)
+Fruits360Dataset(None).show_random_image_from_test_set()
 # Fruits360Dataset(process_config('meta_fruits_train_config.json'))
