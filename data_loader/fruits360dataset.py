@@ -60,8 +60,3 @@ class Fruits360Dataset:
     def show_random_image_from_test_set(self):
         Image.open(RANDOM_IMAGE_PATH).show(title='Pomme')
 
-
-# TEST
-# from utils.config import process_config
-Fruits360Dataset(None).show_random_image_from_test_set()
-# Fruits360Dataset(process_config('meta_fruits_train_config.json'))
