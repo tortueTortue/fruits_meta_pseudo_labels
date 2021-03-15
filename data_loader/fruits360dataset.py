@@ -19,7 +19,7 @@ class Fruits360Dataset:
     def __init__(self, config):
         self.config = config
         
-        fruits_root = pathlib.Path(TRAINING_SET_PATH) #TODO Take path from config
+        fruits_root = pathlib.Path(self.config.training_set_path)
 
         self.input = np.ones((500, 784))
         self.y = np.ones((500, 10))
@@ -28,10 +28,16 @@ class Fruits360Dataset:
         # Split training set into train n val
         list_ds = tf.data.Dataset.list_files(str(fruits_root/'*/*'))
         self.train_set = list_ds.map(self.process_path)
+        self.train_set.shuffle(buffer_size=100)
+        val_set_size = int(0.85 * len(self.train_set))
+        self.val_set = self.train_set.take(val_set_size)
+        self.train_set = self.train_set.skip(val_set_size).take(len(self.train_set) - val_set_size)
+
+        self.train_set = self.train_set.batch(self.config.batch_size)
         # print(f"Train shape: {self.train_set.batch(4).shape}")
 
         # Import test set
-        fruits_test_root = pathlib.Path(TEST_SET_PATH)
+        fruits_test_root = pathlib.Path(self.config.test_set_path)
         self.test_set = tf.data.Dataset.list_files(str(fruits_test_root/'*/*')).map(self.process_path)
 
     def process_path(self, file_path):
@@ -58,5 +64,5 @@ class Fruits360Dataset:
         return self.classes
 
     def show_random_image_from_test_set(self):
-        Image.open(RANDOM_IMAGE_PATH).show(title='Pomme')
+        Image.open(self.config.random_image_path).show(title='Pomme')
 

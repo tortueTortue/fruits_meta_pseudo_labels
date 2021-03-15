@@ -3,14 +3,12 @@ import os
 
 
 class Logger:
-    def __init__(self, sess,config):
-        self.sess = sess
+    def __init__(self, config):
         self.config = config
         self.summary_placeholders = {}
         self.summary_ops = {}
-        self.train_summary_writer = tf.summary.FileWriter(os.path.join(self.config.summary_dir, "train"),
-                                                          self.sess.graph)
-        self.test_summary_writer = tf.summary.FileWriter(os.path.join(self.config.summary_dir, "test"))
+        self.train_summary_writer = tf.summary.create_file_writer(self.config.summary_dir, name="train")
+        self.test_summary_writer = tf.summary.create_file_writer(self.config.summary_dir, name="test")
 
     # it can summarize scalars and images.
     def summarize(self, step, summarizer="train", scope="", summaries_dict=None):
@@ -37,7 +35,7 @@ class Logger:
                         else:
                             self.summary_ops[tag] = tf.summary.image(tag, self.summary_placeholders[tag])
 
-                    summary_list.append(self.sess.run(self.summary_ops[tag], {self.summary_placeholders[tag]: value}))
+                    # summary_list.append(self.sess.run(self.summary_ops[tag], {self.summary_placeholders[tag]: value}))
 
                 for summary in summary_list:
                     summary_writer.add_summary(summary, step)
